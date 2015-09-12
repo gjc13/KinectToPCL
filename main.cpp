@@ -5,7 +5,9 @@
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
+#include <memory>
+#include "IPointCloudDivider.h"
+#include "ProjectionDivider.h"
 #include "PointCloudBuilder.h"
 
 using namespace std;
@@ -16,11 +18,14 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl
 
 int main()
 {
-    cv::Mat depthMat = reload_32f_image("/Users/gjc13/KinectData/depth0.bin");
-    cv::Mat imageMat = cv::imread("/Users/gjc13/KinectData/registered0.png");
+    cv::Mat depthMat = reload_32f_image("/Users/gjc13/KinectData/depth.bin");
+    cv::Mat imageMat = cv::imread("/Users/gjc13/KinectData/registered.png");
     cout << depthMat.at<float>(423, 0) << endl;
     PointCloudBuilder builder(depthMat, imageMat);
-    auto viewer = rgbVis(builder.getPointCloud());
+    PointCloudPtr pointCloud = builder.getPointCloud();
+    ProjectionDivider divider(pointCloud);
+    divider.saveDensity();
+    auto viewer = rgbVis(pointCloud);
     while (!viewer->wasStopped ())
     {
         viewer->spinOnce (100);
