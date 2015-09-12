@@ -29,6 +29,7 @@ int main()
     return 0;
 }
 
+//恢复CV::32fc1的深度图
 cv::Mat reload_32f_image(string filename)
 {
     ifstream fin(filename, ifstream::binary);
