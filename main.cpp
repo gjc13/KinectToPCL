@@ -15,6 +15,7 @@ using namespace std;
 cv::Mat reload_32f_image(string filename);
 void print_depth(cv::Mat depthMat);
 boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud);
+PointCloudPtr getSubXCloud(PointCloudPtr cloud, double fromX, double toX);
 
 int main()
 {
@@ -23,8 +24,10 @@ int main()
     cout << depthMat.at<float>(423, 0) << endl;
     PointCloudBuilder builder(depthMat, imageMat);
     PointCloudPtr pointCloud = builder.getPointCloud();
-    ProjectionDivider divider(pointCloud);
-    divider.saveDensity();
+    cout << pointCloud->points.size() << endl;
+//    PointCloudPtr subCloud = getSubXCloud(pointCloud, 4, 20);
+//    ProjectionDivider divider(pointCloud);
+//    divider.saveDensity();
     auto viewer = rgbVis(pointCloud);
     while (!viewer->wasStopped ())
     {
@@ -66,9 +69,24 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->setBackgroundColor (0, 0, 0);
     pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
-    viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+    //viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
+    //viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
     viewer->addCoordinateSystem (1.0);
     viewer->initCameraParameters ();
     return (viewer);
+}
+
+PointCloudPtr getSubXCloud(PointCloudPtr cloud, double fromX, double toX)
+{
+    PointCloudPtr newCloud(new pcl::PointCloud<pcl::PointXYZRGB>());
+    for(pcl::PointXYZRGB point: cloud->points)
+    {
+        if(point.x < toX & point.x > fromX)
+        {
+            newCloud->points.push_back(point);
+        }
+    }
+    newCloud->width = (int)newCloud->points.size();
+    newCloud->height = 1;
+    return newCloud;
 }
