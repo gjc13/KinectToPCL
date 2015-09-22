@@ -1,21 +1,23 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <string>
 #include <fstream>
-#include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <memory>
-#include "IPointCloudDivider.h"
-#include "ProjectionDivider.h"
 #include "PointCloudBuilder.h"
+#include <pcl/filters/conditional_removal.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl/filters/extract_indices.h>
 
 using namespace std;
 
 cv::Mat reload_32f_image(string filename);
 void print_depth(cv::Mat depthMat);
-boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud);
-PointCloudPtr getSubXCloud(PointCloudPtr cloud, double fromX, double toX);
+
+boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud);
 
 int main()
 {
@@ -24,16 +26,42 @@ int main()
     cout << depthMat.at<float>(423, 0) << endl;
     PointCloudBuilder builder(depthMat, imageMat);
     PointCloudPtr pointCloud = builder.getPointCloud();
-    cout << pointCloud->points.size() << endl;
-//    PointCloudPtr subCloud = getSubXCloud(pointCloud, 4, 20);
+    pcl::io::savePCDFile("/Users/gjc13/KinectData/pointCloud.pcd", *pointCloud, true);
+//    PointCloudPtr filteredCloud = removeBigPlanes(pointCloud, 0.2, 3, 5);
+//    pcl::VoxelGrid<pcl::PointXYZRGB> grid;
+//
+//
 //    ProjectionDivider divider(pointCloud);
-//    divider.saveDensity();
-    auto viewer = rgbVis(pointCloud);
-    while (!viewer->wasStopped ())
-    {
-        viewer->spinOnce (100);
-        boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-    }
+//    double xMin = divider.getXMin();
+//    double yMin = divider.getYMin();
+//    double zMin = divider.getZMin();
+//
+//    PointCloudPtr subCloud = getSubCloud(pointCloud, xMin +55, xMin + 180,
+//        yMin + 30, yMin + 42, zMin, zMin + 300);
+//    ofstream fxOut("/Users/gjc13/KinectData/planeX.data");
+//    ofstream fyOut("/Users/gjc13/KinectData/planeY.data");
+//    ofstream fzOut("/Users/gjc13/KinectData/planeZ.data");
+//    for(auto point: subCloud->points)
+//    {
+//        double x = point.x;
+//        fxOut << x << endl;
+//    }
+//    for(auto point: subCloud->points)
+//    {
+//        double y = point.y;
+//        fyOut << y << endl;
+//    }
+//    for(auto point: subCloud->points)
+//    {
+//        double z = point.z;
+//        fzOut << z << endl;
+//    }
+//    auto viewer = rgbVis(pointCloud);
+//    while (!viewer->wasStopped())
+//    {
+//        viewer->spinOnce(100);
+//        boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+//    }
     return 0;
 }
 
@@ -61,32 +89,18 @@ void print_depth(cv::Mat depthMat)
     cv::imshow("depth", boardDepth);
 }
 
-boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
+boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
 {
     // --------------------------------------------
     // -----Open 3D viewer and add point cloud-----
     // --------------------------------------------
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
-    viewer->setBackgroundColor (0, 0, 0);
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+    viewer->setBackgroundColor(0, 0, 0);
     pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
-    //viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
-    //viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
-    viewer->addCoordinateSystem (1.0);
-    viewer->initCameraParameters ();
+    viewer->addPointCloud<pcl::PointXYZRGB>(cloud, rgb, "sample cloud");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+    viewer->addCoordinateSystem(1.0);
+    viewer->initCameraParameters();
     return (viewer);
 }
 
-PointCloudPtr getSubXCloud(PointCloudPtr cloud, double fromX, double toX)
-{
-    PointCloudPtr newCloud(new pcl::PointCloud<pcl::PointXYZRGB>());
-    for(pcl::PointXYZRGB point: cloud->points)
-    {
-        if(point.x < toX & point.x > fromX)
-        {
-            newCloud->points.push_back(point);
-        }
-    }
-    newCloud->width = (int)newCloud->points.size();
-    newCloud->height = 1;
-    return newCloud;
-}
