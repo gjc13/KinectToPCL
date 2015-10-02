@@ -22,6 +22,7 @@ public:
         return pointCloud;
     }
 
+    cv::Mat getPointXY(int pixelX, int pixelY, double depth, double p[3][4]);
 private:
     void buildPointCloud();
 

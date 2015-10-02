@@ -11,13 +11,17 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
+#include "KinectParameters.h"
 
 using namespace std;
 
 cv::Mat reload_32f_image(string filename);
+
 void print_depth(cv::Mat depthMat);
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud);
+
+void printPojectedXY(double x, double y, double z, double projectionMatrix[3][4]);
 
 int main()
 {
@@ -26,7 +30,8 @@ int main()
     cout << depthMat.at<float>(423, 0) << endl;
     PointCloudBuilder builder(depthMat, imageMat);
     PointCloudPtr pointCloud = builder.getPointCloud();
-    pcl::io::savePCDFile("/Users/gjc13/KinectData/pointCloud.pcd", *pointCloud, true);
+    pcl::io::savePCDFile("/Users/gjc13/KinectData/sample1.pcd", *pointCloud, true);
+
 //    PointCloudPtr filteredCloud = removeBigPlanes(pointCloud, 0.2, 3, 5);
 //    pcl::VoxelGrid<pcl::PointXYZRGB> grid;
 //
@@ -102,5 +107,22 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis(pcl::PointCloud<pcl:
     viewer->addCoordinateSystem(1.0);
     viewer->initCameraParameters();
     return (viewer);
+}
+
+void printPojectedXY(double x, double y, double z, double projectionMatrix[3][4])
+{
+    double position[4] = {x, y, z, 1};
+    double projectedPositions[3] = {0, 0, 0};
+    cout << x  << " " << y << " " << z << endl;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            projectedPositions[i] += projectionMatrix[i][j] * position[j];
+        }
+    }
+    cout << projectedPositions[0] / projectedPositions[2] << " "
+    << projectedPositions[1] / projectedPositions[2] << endl;
+
 }
 

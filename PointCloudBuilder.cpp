@@ -19,7 +19,6 @@ PointCloudBuilder::PointCloudBuilder(const cv::Mat &depthMatrix, const cv::Mat &
 
 void PointCloudBuilder::buildPointCloud()
 {
-    auto &p = projectionParameter;
     depthMat = depthMat * depthToZ[0] + depthToZ[1];
     for (int y = 0; y < imageMat.rows; y++)
     {
@@ -31,22 +30,8 @@ void PointCloudBuilder::buildPointCloud()
                 continue;
             }
 
-            double matrixAval[2][2] = {
-                    {p[0][0] - p[2][0] * x, p[0][1] - p[2][1] * x},
-                    {p[1][0] - p[2][0] * y, p[1][1] - p[2][1] * y}
-            };
-            cv::Mat matrixA(2, 2, CV_64FC1, &matrixAval);
-            double matrixbval[2] = {
-                    p[2][2] * Z * x + p[2][3] * x - p[0][2] * Z - p[0][3],
-                    p[2][2] * Z * y + p[2][3] * y - p[1][2] * Z - p[1][3]
-            };
-            cv::Mat matrixb(2, 1, CV_64FC1, &matrixbval);
-            cv::Mat solvedXY;
-            if (!cv::solve(matrixA, matrixb, solvedXY))
-            {
-                cerr << "singular matrix A at x,y" << x << " " << y << endl;
-                continue;
-            }
+            cv::Mat solvedXY = getPointXY(x, y, Z, projectionParameter);
+            if(solvedXY.rows == 0 || solvedXY.cols == 0) continue;
             double X = solvedXY.at<double>(0);
             double Y = solvedXY.at<double>(1);
             pcl::PointXYZRGB newPoint;
@@ -62,4 +47,25 @@ void PointCloudBuilder::buildPointCloud()
     pointCloud->width = (int) pointCloud->points.size();
     pointCloud->height = 1;
     cout << "Build success" << endl;
+}
+
+cv::Mat PointCloudBuilder::getPointXY(int pixelx, int pixely, double depth, double p[3][4])
+{
+    double matrixAval[2][2] = {
+            {p[0][0] - p[2][0] * pixelx, p[0][1] - p[2][1] * pixelx},
+            {p[1][0] - p[2][0] * pixely, p[1][1] - p[2][1] * pixely}
+    };
+    cv::Mat matrixA(2, 2, CV_64FC1, &matrixAval);
+    double matrixbval[2] = {
+            p[2][2] * depth * pixelx + p[2][3] * pixelx - p[0][2] * depth - p[0][3],
+            p[2][2] * depth * pixely + p[2][3] * pixely - p[1][2] * depth - p[1][3]
+    };
+    cv::Mat matrixb(2, 1, CV_64FC1, &matrixbval);
+    cv::Mat solvedXY;
+    if (!cv::solve(matrixA, matrixb, solvedXY))
+    {
+        cerr << "singular matrix A at x,y" << pixelx << " " << pixely << endl;
+        return cv::Mat();
+    }
+    return solvedXY;
 }
