@@ -17,14 +17,11 @@ class PointCloudBuilder
 public:
     PointCloudBuilder(const cv::Mat & depthMatrix, const cv::Mat & imageMatrix);
 
-    PointCloudPtr getPointCloud()
-    {
-        return pointCloud;
-    }
+    PointCloudPtr getPointCloud();
 
     cv::Mat getPointXY(int pixelX, int pixelY, double depth, double p[3][4]);
-private:
-    void buildPointCloud();
+protected:
+    virtual void buildPointCloud();
 
     cv::Mat depthMat;
     cv::Mat imageMat;

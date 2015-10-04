@@ -11,10 +11,18 @@ using std::cout;
 using std::endl;
 
 PointCloudBuilder::PointCloudBuilder(const cv::Mat &depthMatrix, const cv::Mat &imageMatrix)
-        : depthMat(depthMatrix), imageMat(imageMatrix),
-          pointCloud(new pcl::PointCloud<pcl::PointXYZRGB>())
+        : depthMat(depthMatrix), imageMat(imageMatrix)
 {
-    buildPointCloud();
+}
+
+PointCloudPtr PointCloudBuilder::getPointCloud()
+{
+	if(!pointCloud)
+	{
+		pointCloud = PointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGB>());
+		buildPointCloud();
+	}
+	return pointCloud;
 }
 
 void PointCloudBuilder::buildPointCloud()
