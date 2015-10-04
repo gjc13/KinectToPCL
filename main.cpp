@@ -12,6 +12,8 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
 #include "KinectParameters.h"
+#include "LineFilter.h"
+#include "PointCloudBuilder.h"
 
 using namespace std;
 
@@ -25,12 +27,12 @@ void printPojectedXY(double x, double y, double z, double projectionMatrix[3][4]
 
 int main()
 {
-    cv::Mat depthMat = reload_32f_image("/Users/gjc13/KinectData/depth.bin");
-    cv::Mat imageMat = cv::imread("/Users/gjc13/KinectData/registered.png");
-    cout << depthMat.at<float>(423, 0) << endl;
-    PointCloudBuilder builder(depthMat, imageMat);
-    PointCloudPtr pointCloud = builder.getPointCloud();
-    pcl::io::savePCDFile("/Users/gjc13/KinectData/sample1.pcd", *pointCloud, true);
+    cv::Mat depthMat = reload_32f_image("/home/yht/KinectData/depth.bin");
+    cv::Mat imageMat = cv::imread("/home/yht/KinectData/registered.png");
+	PointCloudBuilder * builder = new LineFilter(depthMat, imageMat);
+    PointCloudPtr pointCloud = builder->getPointCloud();
+    pcl::io::savePCDFile("/home/yht/KinectData/sample1.pcd", *pointCloud, true);
+	delete builder;
 
 //    PointCloudPtr filteredCloud = removeBigPlanes(pointCloud, 0.2, 3, 5);
 //    pcl::VoxelGrid<pcl::PointXYZRGB> grid;
@@ -73,7 +75,7 @@ int main()
 //恢复CV::32fc1的深度图
 cv::Mat reload_32f_image(string filename)
 {
-    ifstream fin(filename, ifstream::binary);
+    ifstream fin(filename.c_str(), ifstream::binary);
     int num_rows, num_cols;
     fin.read((char *) &num_rows, sizeof(int));
     fin.read((char *) &num_cols, sizeof(int));
