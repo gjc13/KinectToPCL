@@ -2,7 +2,7 @@
 // Created by yht on 04/10/15.
 //
 
-#include "LineFilter.h"
+#include "LlinefilterBuilder.h"
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -10,13 +10,13 @@
 using namespace std;
 using namespace cv;
 
-LineFilter::LineFilter(const cv::Mat &depthMatrix, const cv::Mat &imageMatrix)
+LineFilterBuilder::LineFilterBuilder(const cv::Mat &depthMatrix, const cv::Mat &imageMatrix)
 :PointCloudBuilder(depthMatrix, imageMatrix)
 {
 
 }
 
-void LineFilter::buildPointCloud() {
+void LineFilterBuilder::buildPointCloud() {
     Mat dst,cdst;
     Canny(imageMat, dst, 50, 200, 3);
 	cvtColor(depthMat,cdst, COLOR_GRAY2BGR);
