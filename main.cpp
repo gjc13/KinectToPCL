@@ -25,13 +25,20 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis(pcl::PointCloud<pcl:
 
 void printPojectedXY(double x, double y, double z, double projectionMatrix[3][4]);
 
-int main()
+void print_usage();
+
+int main(int argc, const char * argv[])
 {
-    cv::Mat depthMat = reload_32f_image("/home/yht/KinectData/depth.bin");
-    cv::Mat imageMat = cv::imread("/home/yht/KinectData/registered.png");
+    if(argc != 4)
+    {
+        print_usage();
+        return -1;
+    }
+    cv::Mat depthMat = reload_32f_image(argv[1]);
+    cv::Mat imageMat = cv::imread(argv[2]);
 	PointCloudBuilder * builder = new LineFilter(depthMat, imageMat);
     PointCloudPtr pointCloud = builder->getPointCloud();
-    pcl::io::savePCDFile("/home/yht/KinectData/sample1.pcd", *pointCloud, true);
+    pcl::io::savePCDFile(argv[3], *pointCloud, true);
 	delete builder;
 
 //    PointCloudPtr filteredCloud = removeBigPlanes(pointCloud, 0.2, 3, 5);
@@ -128,3 +135,7 @@ void printPojectedXY(double x, double y, double z, double projectionMatrix[3][4]
 
 }
 
+void print_usage()
+{
+    cout << "KinectToPCL depthBinFile registeredImage saveFile" << endl;
+}
