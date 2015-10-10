@@ -12,7 +12,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
 #include "KinectParameters.h"
-#include "LineFilter.h"
+#include "LlinefilterBuilder.h"
 #include "PointCloudBuilder.h"
 
 using namespace std;

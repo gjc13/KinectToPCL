@@ -26,14 +26,17 @@ set(LIBRARIES
     ${OPENCV_LIBS}
     ${OPENCV_LIBRARIES}
 )
-set(SOURCE_FILES main.cpp LineFilter.cpp LineFilter.h)
+set(SOURCE_FILES
+    main.cpp
+    LlinefilterBuilder.cpp
+    LlinefilterBuilder.h
+    PointCloudBuilder.cpp
+    PointCloudBuilder.h
+    common.h
+    KinectParameters.h
+    KinectParameters.cpp)
 add_executable(KinectToPCL ${SOURCE_FILES}
-            PointCloudBuilder.cpp
-            PointCloudBuilder.h
-            common.h
-            KinectParameters.h
-            KinectParameters.h
-            KinectParameters.cpp)
+   )
 
 target_link_libraries(KinectToPCL
 ${OpenCV_LIBS}
