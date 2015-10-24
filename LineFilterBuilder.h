@@ -13,6 +13,9 @@ public:
     LineFilterBuilder(const cv::Mat & depthMatrix, const cv::Mat & imageMatrix);
 
 protected:
+
+    void removeLines();
+
     void buildPointCloud();
 };
 

@@ -28,15 +28,15 @@ set(LIBRARIES
 )
 set(SOURCE_FILES
     main.cpp
-    LlinefilterBuilder.cpp
-    LlinefilterBuilder.h
+    LineFilterBuilder.cpp
+    LineFilterBuilder.h
     PointCloudBuilder.cpp
     PointCloudBuilder.h
     common.h
     KinectParameters.h
     KinectParameters.cpp)
 add_executable(KinectToPCL ${SOURCE_FILES}
-   )
+   EntropyFilterBuilder.h EntropyFilterBuilder.cpp)
 
 target_link_libraries(KinectToPCL
 ${OpenCV_LIBS}

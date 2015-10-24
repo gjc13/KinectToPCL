@@ -12,8 +12,9 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
 #include "KinectParameters.h"
-#include "LlinefilterBuilder.h"
+#include "LineFilterBuilder.h"
 #include "PointCloudBuilder.h"
+#include "EntropyFilterBuilder.h"
 
 using namespace std;
 
@@ -36,7 +37,10 @@ int main(int argc, const char * argv[])
     }
     cv::Mat depthMat = reload_32f_image(argv[1]);
     cv::Mat imageMat = cv::imread(argv[2]);
-	PointCloudBuilder * builder = new LineFilter(depthMat, imageMat);
+    cv::Mat grayScaleImage;
+    cv::cvtColor(imageMat, grayScaleImage, CV_BGR2GRAY);
+    printf("type: %d\n", grayScaleImage.type());
+	PointCloudBuilder * builder = new EntropyFilterBuilder(depthMat, imageMat);
     PointCloudPtr pointCloud = builder->getPointCloud();
     pcl::io::savePCDFile(argv[3], *pointCloud, true);
 	delete builder;
