@@ -8,11 +8,14 @@
 
 #include "PointCloudBuilder.h"
 
-class LineFilter :public PointCloudBuilder{
+class LineFilterBuilder :public PointCloudBuilder{
 public:
-    LineFilter(const cv::Mat & depthMatrix, const cv::Mat & imageMatrix);
+    LineFilterBuilder(const cv::Mat & depthMatrix, const cv::Mat & imageMatrix);
 
 protected:
+
+    void removeLines();
+
     void buildPointCloud();
 };
 
