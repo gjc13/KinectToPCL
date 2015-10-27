@@ -10,9 +10,14 @@ using namespace std;
 
 void EntropyFilterBuilder::buildPointCloud()
 {
+    LineFilterBuilder::removeLines();
     cv::Mat entropyImage = getEntropyImage();
     filterEntropy(0.3, entropyImage);
-    LineFilterBuilder::buildPointCloud();
+    openDepthImage();
+#ifdef __DEBUG__
+    saveFilter();
+#endif
+    PointCloudBuilder::buildPointCloud();
 }
 
 cv::Mat EntropyFilterBuilder::getEntropyImage()
@@ -69,11 +74,15 @@ void EntropyFilterBuilder::filterEntropy(double threshold, cv::Mat &entropyImage
             if (entropyImage.at<double>(i, j) < threshold)
             {
                 depthMat.at<float>(i, j) = 0;
+#ifdef __DEBUG__
                 imageMat.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+#endif
             }
         }
     }
+#ifdef __DEBUG__
     cv::imwrite("/Users/gjc13/KinectData/filtered.png", imageMat);
+#endif
 }
 
 void EntropyFilterBuilder::buildEntropyTable()
@@ -84,4 +93,30 @@ void EntropyFilterBuilder::buildEntropyTable()
     {
         entropyTable[i] = log2((double) i / greyLevels);
     }
+}
+
+void EntropyFilterBuilder::openDepthImage()
+{
+    static const int kernelSize = 2;
+    cv::Mat erodeKernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
+                                                    cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1),
+                                                    cv::Point(kernelSize, kernelSize));
+    cv::erode(depthMat, depthMat, erodeKernel);
+    cv::dilate(depthMat, depthMat, erodeKernel);
+}
+
+void EntropyFilterBuilder::saveFilter()
+{
+    cv::Mat filterImage(imageMat.rows, imageMat.cols, CV_8UC1);
+    for (int i = 0; i < imageMat.rows; i++)
+        for (int j = 0; j < imageMat.cols; j++)
+        {
+            if (depthMat.at<float>(i, j) < 0.0001)
+                filterImage.at<uchar>(i, j) = 255;
+            else
+            {
+                filterImage.at<uchar>(i, j) = 0;
+            }
+        }
+    cv::imwrite("/Users/gjc13/KinectData/filter.png", filterImage);
 }

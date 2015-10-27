@@ -11,27 +11,30 @@ using namespace std;
 using namespace cv;
 
 LineFilterBuilder::LineFilterBuilder(const cv::Mat &depthMatrix, const cv::Mat &imageMatrix)
-:PointCloudBuilder(depthMatrix, imageMatrix)
+        : PointCloudBuilder(depthMatrix, imageMatrix)
 {
 }
 
-void LineFilterBuilder::buildPointCloud() {
+void LineFilterBuilder::buildPointCloud()
+{
     removeLines();
-	PointCloudBuilder::buildPointCloud();
+    PointCloudBuilder::buildPointCloud();
 }
 
 void LineFilterBuilder::removeLines()
 {
-    Mat dst,cdst;
+    Mat dst, cdst;
     Canny(imageMat, dst, 50, 200, 3);
-	cvtColor(depthMat,cdst, COLOR_GRAY2BGR);
+    cvtColor(depthMat, cdst, COLOR_GRAY2BGR);
 
     vector<Vec4i> lines;
-    HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 10 );
-    for( size_t i = 0; i < lines.size(); i++ )
+    HoughLinesP(dst, lines, 1, CV_PI / 180, 50, 50, 10);
+    for (size_t i = 0; i < lines.size(); i++)
     {
         Vec4i l = lines[i];
-        line( cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,0), 5, CV_AA);
+        line(cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0, 0, 0), 5, CV_AA);
     }
-	cvtColor(cdst,depthMat, COLOR_RGB2GRAY);
+    cvtColor(cdst, depthMat, COLOR_RGB2GRAY);
+
+
 }

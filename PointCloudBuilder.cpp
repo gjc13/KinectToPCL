@@ -4,7 +4,7 @@
 
 #include "PointCloudBuilder.h"
 #include "KinectParameters.h"
-#include <iostream>
+#include <cstdio>
 
 using std::cerr;
 using std::cout;

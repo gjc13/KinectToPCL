@@ -28,11 +28,15 @@ protected:
     void buildPointCloud();
 
 private:
+    void saveFilter();
+
     cv::Mat getEntropyImage();
 
     void filterEntropy(double threshold, cv::Mat &entropyImage);
 
     void buildEntropyTable();
+
+    void openDepthImage();
 
     double *entropyTable;
     int filterSize;

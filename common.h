@@ -10,4 +10,6 @@
 
 typedef pcl::PointCloud<pcl::PointXYZRGB>::Ptr PointCloudPtr;
 
+#define __DEBUG__
+
 #endif //KINECTDATAANALYZER_COMMON_H
