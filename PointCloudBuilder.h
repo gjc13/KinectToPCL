@@ -25,6 +25,7 @@ protected:
 
     cv::Mat depthMat;
     cv::Mat imageMat;
+    cv::Mat originalImage;
     PointCloudPtr pointCloud;
 };
 

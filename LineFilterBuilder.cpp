@@ -33,6 +33,9 @@ void LineFilterBuilder::removeLines()
     {
         Vec4i l = lines[i];
         line(cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0, 0, 0), 5, CV_AA);
+#ifdef __DEBUG__
+        line(imageMat, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255, 255, 255), 5, CV_AA);
+#endif
     }
     cvtColor(cdst, depthMat, COLOR_RGB2GRAY);
 
