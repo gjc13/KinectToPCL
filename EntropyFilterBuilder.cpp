@@ -12,11 +12,12 @@ void EntropyFilterBuilder::buildPointCloud()
 {
     LineFilterBuilder::removeLines();
     cv::Mat entropyImage = getEntropyImage();
-    filterEntropy(0.3, entropyImage);
+    filterEntropy(0.4, entropyImage);
     openDepthImage();
 #ifdef __DEBUG__
     saveFilter();
 #endif
+    imageMat = originalImage;
     PointCloudBuilder::buildPointCloud();
 }
 
@@ -97,12 +98,21 @@ void EntropyFilterBuilder::buildEntropyTable()
 
 void EntropyFilterBuilder::openDepthImage()
 {
-    static const int kernelSize = 2;
+    static const int refillKernelSize = 3;
+    static const int erodeKernelSize = 5;
+    static const int dilateKernelSize = 5;
+    cv::Mat refillKernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
+                                                    cv::Size(2 * refillKernelSize + 1, 2 * refillKernelSize + 1),
+                                                    cv::Point(refillKernelSize, refillKernelSize));
     cv::Mat erodeKernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
-                                                    cv::Size(2 * kernelSize + 1, 2 * kernelSize + 1),
-                                                    cv::Point(kernelSize, kernelSize));
+                                                    cv::Size(2 * erodeKernelSize + 1, 2 * erodeKernelSize + 1),
+                                                    cv::Point(erodeKernelSize, erodeKernelSize));
+    cv::dilate(depthMat, depthMat, refillKernel);
     cv::erode(depthMat, depthMat, erodeKernel);
-    cv::dilate(depthMat, depthMat, erodeKernel);
+    cv::Mat dilateKernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
+                                                     cv::Size(2 * dilateKernelSize + 1, 2 * dilateKernelSize + 1),
+                                                     cv::Point(dilateKernelSize, dilateKernelSize));
+    cv::dilate(depthMat, depthMat, dilateKernel);
 }
 
 void EntropyFilterBuilder::saveFilter()
@@ -118,5 +128,13 @@ void EntropyFilterBuilder::saveFilter()
                 filterImage.at<uchar>(i, j) = 0;
             }
         }
+
+    for (int i = 0; i < imageMat.rows; i++)
+        for (int j = 0; j < imageMat.cols; j++)
+        {
+            if (depthMat.at<float>(i, j) < 0.0001)
+                originalImage.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+        }
     cv::imwrite("/Users/gjc13/KinectData/filter.png", filterImage);
+    cv::imwrite("/Users/gjc13/KinectData/final.png", originalImage);
 }

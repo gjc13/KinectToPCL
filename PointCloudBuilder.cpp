@@ -11,7 +11,7 @@ using std::cout;
 using std::endl;
 
 PointCloudBuilder::PointCloudBuilder(const cv::Mat &depthMatrix, const cv::Mat &imageMatrix)
-        : depthMat(depthMatrix), imageMat(imageMatrix)
+        : depthMat(depthMatrix), imageMat(imageMatrix), originalImage(imageMatrix.clone())
 {
 }
 

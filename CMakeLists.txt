@@ -14,6 +14,7 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 INCLUDE_DIRECTORIES(
   ${OpenCV_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
+  svm
 )
 LINK_DIRECTORIES(
     ${PCL_LIBRARY_DIRS}
@@ -34,9 +35,11 @@ set(SOURCE_FILES
     PointCloudBuilder.h
     common.h
     KinectParameters.h
-    KinectParameters.cpp)
-add_executable(KinectToPCL ${SOURCE_FILES}
-   EntropyFilterBuilder.h EntropyFilterBuilder.cpp)
+    KinectParameters.cpp
+    EntropyFilterBuilder.h
+    EntropyFilterBuilder.cpp
+    )
+add_executable(KinectToPCL ${SOURCE_FILES})
 
 target_link_libraries(KinectToPCL
 ${OpenCV_LIBS}
