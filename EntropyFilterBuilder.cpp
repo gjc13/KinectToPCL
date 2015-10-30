@@ -12,7 +12,7 @@ void EntropyFilterBuilder::buildPointCloud()
 {
     LineFilterBuilder::removeLines();
     cv::Mat entropyImage = getEntropyImage();
-    filterEntropy(0.3, entropyImage);
+    filterEntropy(0.4, entropyImage);
     openDepthImage();
 #ifdef __DEBUG__
     saveFilter();

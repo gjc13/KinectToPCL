@@ -38,8 +38,7 @@ set(SOURCE_FILES
     KinectParameters.cpp
     EntropyFilterBuilder.h
     EntropyFilterBuilder.cpp
-    svm/svm.cpp
-    svm/svm.h)
+    )
 add_executable(KinectToPCL ${SOURCE_FILES})
 
 target_link_libraries(KinectToPCL
