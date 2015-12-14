@@ -43,9 +43,9 @@ cv::Mat EntropyFilterBuilder::getEntropyImage()
             {
                 int x = i - movStart;
                 int y = j - movStart;
-                for (int i = 0; i < greyLevels; i++)
+                for (int k = 0; i < greyLevels; i++)
                 {
-                    grayScale[i] = 0;
+                    grayScale[k] = 0;
                 }
                 for (int movx = 0; movx < filterSize; movx++)
                     for (int movy = 0; movy < filterSize; movy++)
@@ -55,9 +55,9 @@ cv::Mat EntropyFilterBuilder::getEntropyImage()
                         grayScale[int(gray)]++;
                     }
                 double entropy = 0;
-                for (int i = 0; i < greyLevels; i++)
+                for (int k = 0; i < greyLevels; i++)
                 {
-                    entropy += grayScale[i] * entropyTable[(int) grayScale[i]] / (greyLevels);
+                    entropy += grayScale[k] * entropyTable[(int) grayScale[k]] / (greyLevels);
                 }
                 entropyImage.at<double>(i, j) = entropy / entropyTable[1];
             }

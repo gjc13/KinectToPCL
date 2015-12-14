@@ -94,3 +94,5 @@ crashlytics-build.properties
 *.txt
 
 KinectToPCL
+build
+Samples
