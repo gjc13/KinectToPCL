@@ -11,9 +11,9 @@ class EntropyFilterBuilder : public LineFilterBuilder
 {
 public:
 
-    EntropyFilterBuilder(const cv::Mat &depthMatrix, const cv::Mat &imageMatrix, int filtersize = 5)
+    EntropyFilterBuilder(const cv::Mat &depthMatrix, const cv::Mat &imageMatrix, int filtersize = 5, double threshold = 0.4)
             : LineFilterBuilder(depthMatrix, imageMatrix), entropyTable(new double[filtersize * filtersize + 1]),
-              filterSize(filtersize)
+              filterSize(filtersize), threshold_(threshold)
     {
         buildEntropyTable();
     }
@@ -40,6 +40,7 @@ private:
 
     double *entropyTable;
     int filterSize;
+    double threshold_;
 };
 
 #endif

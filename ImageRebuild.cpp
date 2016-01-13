@@ -79,11 +79,10 @@ cv::Mat getHDImageFromPointCloud(PointCloudPtr cloud, cv::Mat &totalImage)
         if (pxNumber.ny > maxPixelY) maxPixelY = pxNumber.ny;
         if (pxNumber.ny < minPixelY) minPixelY = pxNumber.ny;
     }
-    if(minPixelX < 0 || maxPixelX >= totalImage.cols || maxPixelX < 0 ||
-            minPixelY < 0 || maxPixelY >= totalImage.rows || maxPixelY < 0)
-    {
-        return cv::Mat();
-    }
+    minPixelX = minPixelX < 0 ? 0 : minPixelX;
+    maxPixelX = maxPixelX >= totalImage.cols ? totalImage.cols - 1 : maxPixelX;
+    minPixelY = minPixelY < 0 ? 0 : minPixelY;
+    maxPixelY = maxPixelY >= totalImage.cols ? totalImage.cols - 1 : maxPixelY;
     return cv::Mat(totalImage,
                    cv::Range(minPixelY, maxPixelY+1),
                    cv::Range(minPixelX, maxPixelX+1));

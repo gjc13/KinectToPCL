@@ -40,7 +40,7 @@ int main(int argc, const char * argv[])
     cv::Mat grayScaleImage;
     cv::cvtColor(imageMat, grayScaleImage, CV_BGR2GRAY);
     printf("type: %d\n", grayScaleImage.type());
-	PointCloudBuilder * builder = new EntropyFilterBuilder(depthMat, imageMat);
+	PointCloudBuilder * builder = new EntropyFilterBuilder(depthMat, imageMat, 5, 0.4);
     PointCloudPtr pointCloud = builder->getPointCloud();
     pcl::io::savePCDFile(argv[4], *pointCloud, true);
     IPointCloudDivider * divider = new ClusterDivider(pointCloud);

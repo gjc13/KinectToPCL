@@ -12,7 +12,7 @@ void EntropyFilterBuilder::buildPointCloud()
 {
     LineFilterBuilder::removeLines();
     cv::Mat entropyImage = getEntropyImage();
-    filterEntropy(0.4, entropyImage);
+    filterEntropy(threshold_, entropyImage);
     openDepthImage();
 #ifdef __DEBUG__
     saveFilter();
@@ -26,7 +26,6 @@ cv::Mat EntropyFilterBuilder::getEntropyImage()
     cv::Mat entropyImage(imageMat.rows, imageMat.cols, CV_64FC1);
     cv::Mat grayScaleImage;
     cv::cvtColor(imageMat, grayScaleImage, CV_BGR2GRAY);
-    cv::imwrite("grey.png", grayScaleImage);
     int greyLevels = filterSize * filterSize;
     double *grayScale = new double[greyLevels];
     int movStart = filterSize / 2;
