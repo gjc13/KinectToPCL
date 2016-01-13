@@ -38,6 +38,4 @@ void LineFilterBuilder::removeLines()
 #endif
     }
     cvtColor(cdst, depthMat, COLOR_RGB2GRAY);
-
-
 }

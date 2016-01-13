@@ -26,6 +26,7 @@ cv::Mat EntropyFilterBuilder::getEntropyImage()
     cv::Mat entropyImage(imageMat.rows, imageMat.cols, CV_64FC1);
     cv::Mat grayScaleImage;
     cv::cvtColor(imageMat, grayScaleImage, CV_BGR2GRAY);
+    cv::imwrite("grey.png", grayScaleImage);
     int greyLevels = filterSize * filterSize;
     double *grayScale = new double[greyLevels];
     int movStart = filterSize / 2;
@@ -43,7 +44,7 @@ cv::Mat EntropyFilterBuilder::getEntropyImage()
             {
                 int x = i - movStart;
                 int y = j - movStart;
-                for (int k = 0; i < greyLevels; i++)
+                for (int k = 0; k < greyLevels; k++)
                 {
                     grayScale[k] = 0;
                 }
@@ -55,9 +56,10 @@ cv::Mat EntropyFilterBuilder::getEntropyImage()
                         grayScale[int(gray)]++;
                     }
                 double entropy = 0;
-                for (int k = 0; i < greyLevels; i++)
+                for (int k = 0; k < greyLevels; k++)
                 {
-                    entropy += grayScale[k] * entropyTable[(int) grayScale[k]] / (greyLevels);
+                    double add_entropy = double(grayScale[k]) * entropyTable[(int) grayScale[k]] / double(greyLevels);
+                    entropy += add_entropy;
                 }
                 entropyImage.at<double>(i, j) = entropy / entropyTable[1];
             }
@@ -82,7 +84,7 @@ void EntropyFilterBuilder::filterEntropy(double threshold, cv::Mat &entropyImage
         }
     }
 #ifdef __DEBUG__
-    cv::imwrite("/Users/gjc13/KinectData/filtered.png", imageMat);
+    cv::imwrite("filtered.png", imageMat);
 #endif
 }
 
@@ -93,6 +95,7 @@ void EntropyFilterBuilder::buildEntropyTable()
     for (int i = 1; i <= filterSize * filterSize; i++)
     {
         entropyTable[i] = log2((double) i / greyLevels);
+        printf("%f\n", entropyTable[i]);
     }
 }
 

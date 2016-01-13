@@ -96,3 +96,5 @@ crashlytics-build.properties
 KinectToPCL
 build
 Samples
+
+.DS_Store

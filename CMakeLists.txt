@@ -30,14 +30,12 @@ set(LIBRARIES
 set(SOURCE_FILES
     main.cpp
     LineFilterBuilder.cpp
-    LineFilterBuilder.h
     PointCloudBuilder.cpp
-    PointCloudBuilder.h
-    common.h
-    KinectParameters.h
     KinectParameters.cpp
-    EntropyFilterBuilder.h
     EntropyFilterBuilder.cpp
+    ImageRebuild.cpp
+    PointCloudUtilities.cpp
+    ClusterDivider.cpp
     )
 add_executable(KinectToPCL ${SOURCE_FILES})
 
